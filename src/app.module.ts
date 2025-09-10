@@ -5,9 +5,10 @@ import { dbmodule } from './modules/db.module';
 import { UsersModule } from './modules/users.module';
 import { DataSource } from 'typeorm';
 import { multerModule } from './modules/multer.module';
+import { Authmodule } from './modules/auth.module';
 
 @Module({
-  imports: [dbmodule,UsersModule,multerModule],
+  imports: [dbmodule,UsersModule,multerModule,Authmodule],
   controllers: [AppController],
   providers: [AppService],
 })

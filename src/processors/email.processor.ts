@@ -26,7 +26,7 @@ export class EmailProcessor {
       from: `"My App" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Welcome to My App!',
-      text: `Hello User #${userId}, welcome aboard 🚀`,
+      text: `Hello User #${userId}, welcome aboard 🚀 to talha ki app`,
     });
 
     console.log(`✅ Welcome email sent to ${email}`);

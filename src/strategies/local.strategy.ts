@@ -4,16 +4,16 @@ import { PassportStrategy } from "@nestjs/passport";
 import { Authservice } from "src/services/auth.service";
 
 @Injectable()
-export class Localstrategy extends PassportStrategy(Strategy){
-    constructor(private authservice: Authservice) {
-        super({usernameField: 'email'})
+export class Localstrategy extends PassportStrategy(Strategy) {
+  constructor(private authservice: Authservice) {
+    super({ usernameField: 'email' }); // tells passport to use "email" instead of "username"
+  }
+
+  async validate(email: string, password: string): Promise<any> {
+    const user = await this.authservice.validateusercredentials(email, password);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
     }
-    async validate(email: string, password: string):Promise <any>{
-        const user = this.authservice.validateusercredentials(email,password);
-        if(!user){
-            throw new UnauthorizedException;
-        }
-        return user;
-    }
-    
+    return user; // this will be attached to req.user
+  }
 }

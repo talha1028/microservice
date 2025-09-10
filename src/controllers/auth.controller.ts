@@ -1,16 +1,38 @@
-import { Authservice } from "src/services/auth.service";
-import { Controller, Request, UseGuards } from "@nestjs/common";
-import { Body,Post,Patch,Get,Delete } from "@nestjs/common";
-import { ApiBearerAuth } from "@nestjs/swagger";
-import { Jwtauthguard } from "src/guards/jwtauth.guard";
+import { Controller, Request, UseGuards, Post, Get } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { Authservice } from 'src/services/auth.service';
+import { Jwtauthguard } from 'src/guards/jwtauth.guard';
+import { LocalAuthGuard } from 'src/guards/locatauth.guard';
+
+@ApiTags('Auth')
 @Controller('auth')
-export class Authcontroller{
-    constructor(private authservice: Authservice) {}
-    @UseGuards(Jwtauthguard)
-    @ApiBearerAuth('access-token')
-    @Post()
-    login(@Request() req){
-        return this.authservice.login(req.user)
-    }
-    
+export class Authcontroller {
+  constructor(private authservice: Authservice) {}
+
+
+@UseGuards(LocalAuthGuard)
+@Post('login')
+@ApiOperation({ summary: 'User login' })
+@ApiResponse({ status: 201, description: 'JWT token returned' })
+@ApiBody({
+  schema: {
+    type: 'object',
+    properties: {
+      email: { type: 'string', example: 'test@example.com' },
+      password: { type: 'string', example: '123456' },
+    },
+  },
+})
+login(@Request() req) {
+  return this.authservice.login(req.user);
+}
+
+  // ✅ Example of a protected route using JwtAuthGuard
+  @UseGuards(Jwtauthguard)
+  @ApiBearerAuth()
+  @Get('profile')
+  @ApiOperation({ summary: 'Get user profile (protected)' })
+  getProfile(@Request() req) {
+    return req.user;
+  }
 }

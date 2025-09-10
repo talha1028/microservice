@@ -13,6 +13,7 @@ import { Emailmodule } from './email.module';
         Emailmodule
     ],
     controllers: [UsersController],
-    providers: [UsersService]
+    providers: [UsersService],
+    exports: [UsersService]
 })
 export class UsersModule {}

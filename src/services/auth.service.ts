@@ -27,6 +27,6 @@ export class Authservice{
         return null;
     }
     async findbyemail(email: string){
-        this.userservice.getuserbyemail(email);
+        return this.userservice.getuserbyemail(email);
     }
 }
