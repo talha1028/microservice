@@ -3,9 +3,19 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { ValidationPipe } from '@nestjs/common';
+
+
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }))
+  
+  
 
   const config = new DocumentBuilder()
     .setTitle('User Management Microservice')
@@ -19,7 +29,7 @@ async function bootstrap() {
         name: 'Authorization',
         in: 'header',
       },
-      'access-token', // must match @ApiBearerAuth('access-token') in controllers
+      'access-token', 
     )
     .build();
 

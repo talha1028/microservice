@@ -1,4 +1,4 @@
-import { IsEmail, IsUrl, IsNotEmpty, MinLength } from "class-validator";
+import { IsEmail, IsUrl, IsNotEmpty, MinLength, IsOptional } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class createuserdto {
@@ -29,5 +29,6 @@ export class createuserdto {
         description: "Profile picture URL"
     })
     @IsUrl()
-    avatarurl: string;
+    @IsOptional()
+    avatarurl?: string;
 }

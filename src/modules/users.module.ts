@@ -5,6 +5,8 @@ import { User } from 'src/entities/user.entity';
 import { UsersService } from 'src/services/users.service';
 import { multerModule } from './multer.module';
 import { Emailmodule } from './email.module';
+import { UserResolver } from 'src/resolvers/user.resolver';
+import { SeedService } from 'src/services/seeder.service';
 
 @Module({
     imports: [
@@ -13,7 +15,7 @@ import { Emailmodule } from './email.module';
         Emailmodule
     ],
     controllers: [UsersController],
-    providers: [UsersService],
-    exports: [UsersService]
+    providers: [UsersService,UserResolver],
+    exports: [UsersService,SeedService]
 })
 export class UsersModule {}

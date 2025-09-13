@@ -6,9 +6,11 @@ import { UsersModule } from './modules/users.module';
 import { DataSource } from 'typeorm';
 import { multerModule } from './modules/multer.module';
 import { Authmodule } from './modules/auth.module';
+import { AppGraphQLModule } from './modules/graphql.module';
+
 
 @Module({
-  imports: [dbmodule,UsersModule,multerModule,Authmodule],
+  imports: [dbmodule,UsersModule,multerModule,Authmodule,AppGraphQLModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -12,7 +12,7 @@ export class Authservice{
     ) {}
     
     async login(user : User){
-        const payload = { id : user.id, email: user.email}
+        const payload = { id : user.id, email: user.email, role: user.role}
         return{
             accessToken : await this.jwtservice.signAsync(payload)
         }
@@ -22,6 +22,7 @@ export class Authservice{
         if (user && user.password === password){
             const {password,...result} = user;
             this.redisservice.set(`session:${user.id}`,{email: user.email},600)
+            // console.log(this.redisservice.get)
             return result;
         }
         return null;
