@@ -1,7 +1,6 @@
 import { Controller, Request, UseGuards, Post, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { Authservice } from 'src/services/auth.service';
-import { Jwtauthguard } from 'src/guards/jwtauth.guard';
 import { LocalAuthGuard } from 'src/guards/locatauth.guard';
 
 @ApiTags('Auth')
@@ -27,12 +26,4 @@ login(@Request() req) {
   return this.authservice.login(req.user);
 }
 
-  // ✅ Example of a protected route using JwtAuthGuard
-  @UseGuards(Jwtauthguard)
-  @ApiBearerAuth()
-  @Get('profile')
-  @ApiOperation({ summary: 'Get user profile (protected)' })
-  getProfile(@Request() req) {
-    return req.user;
-  }
 }

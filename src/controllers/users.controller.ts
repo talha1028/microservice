@@ -1,11 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseInterceptors, UseGuards } from '@nestjs/common';
+import { 
+    Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, 
+    UseInterceptors, UseGuards, HttpCode, HttpStatus 
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
+import { 
+    ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, 
+    ApiConsumes, ApiBearerAuth 
+} from '@nestjs/swagger';
 import { updateuserdto } from 'src/dtos/updateuser.dto';
 import { createuserdto } from 'src/dtos/user.dto';
 import { UsersService } from 'src/services/users.service';
 import { EmailService } from 'src/services/email.service';
 import { Jwtauthguard } from 'src/guards/jwtauth.guard';
+import { OwnershipGuard } from '../guards/userownership.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { UserRole } from 'src/entities/user.entity';
 
 @ApiTags('Users')
 @Controller('users')
@@ -17,6 +27,7 @@ export class UsersController {
 
     // 🚨 PUBLIC route
     @Post('createuser')
+    @HttpCode(HttpStatus.CREATED)
     @ApiOperation({ summary: 'Create a user in database' })
     @ApiBody({ type: createuserdto })
     @ApiResponse({ status: 201, description: 'User created successfully' })
@@ -26,60 +37,62 @@ export class UsersController {
         return user;
     }
 
-    // ✅ PROTECTED routes
-    @UseGuards(Jwtauthguard)
+    // ✅ ADMIN / SUPERADMIN only
+    @UseGuards(Jwtauthguard, RolesGuard)
+    @Roles(UserRole.ADMIN, UserRole.SUPERADMIN)
     @ApiBearerAuth('access-token')
     @Get('all')
-    @ApiOperation({ summary: 'Get all users' })
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Get all users (admin/superadmin only)' })
     @ApiResponse({ status: 200, description: 'List of all users' })
-    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'Forbidden' })
     getusers() {
         return this.userservice.getusers();
     }
 
-    @UseGuards(Jwtauthguard)
+    // ✅ Owner OR Admin
+    @UseGuards(Jwtauthguard, OwnershipGuard)
     @ApiBearerAuth('access-token')
     @Get(':id')
-    @ApiOperation({ summary: 'Get user by ID' })
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Get user by ID (owner or admin)' })
     @ApiParam({ name: 'id', type: Number })
     @ApiResponse({ status: 200, description: 'User found' })
-    @ApiResponse({ status: 404, description: 'User not found' })
-    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 403, description: 'Forbidden' })
     getuserbyid(@Param('id') id: string) {
         return this.userservice.getuser(Number(id));
     }
 
-    @UseGuards(Jwtauthguard)
+    // ✅ Owner OR Admin
+    @UseGuards(Jwtauthguard, OwnershipGuard)
     @ApiBearerAuth('access-token')
     @Patch('updateuser/:id')
-    @ApiOperation({ summary: 'Update user by ID' })
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Update user by ID (owner or admin)' })
     @ApiParam({ name: 'id', type: Number })
     @ApiBody({ type: updateuserdto })
-    @ApiResponse({ status: 200, description: 'User updated successfully' })
-    @ApiResponse({ status: 401, description: 'Unauthorized' })
     updateUser(@Param('id') id: string, @Body() updateUserDto: updateuserdto) {
         return this.userservice.updateuser(Number(id), updateUserDto);
     }
 
-    @UseGuards(Jwtauthguard)
+    // ✅ Owner OR Admin
+    @UseGuards(Jwtauthguard, OwnershipGuard)
     @ApiBearerAuth('access-token')
     @Delete('delete/:id')
-    @ApiOperation({ summary: 'Delete user by ID' })
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ summary: 'Delete user by ID (owner or admin)' })
     @ApiParam({ name: 'id', type: Number })
-    @ApiResponse({ status: 200, description: 'User deleted successfully' })
-    @ApiResponse({ status: 401, description: 'Unauthorized' })
     deleteuser(@Param('id') id: string) {
         return this.userservice.deleteuser(Number(id));
     }
 
-    @UseGuards(Jwtauthguard)
+    // ✅ Owner OR Admin
+    @UseGuards(Jwtauthguard, OwnershipGuard)
     @ApiBearerAuth('access-token')
     @Patch(':id/avatar')
-    @ApiOperation({ summary: 'Upload avatar for user' })
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Upload avatar for user (owner or admin)' })
     @ApiParam({ name: 'id', type: Number })
-    @ApiResponse({ status: 200, description: 'Avatar uploaded successfully' })
-    @ApiResponse({ status: 404, description: 'User not found' })
-    @ApiResponse({ status: 401, description: 'Unauthorized' })
     @ApiConsumes('multipart/form-data')
     @ApiBody({
         schema: {
@@ -91,7 +104,6 @@ export class UsersController {
     })
     @UseInterceptors(FileInterceptor('file'))
     async uploadAvatar(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
-        console.log(file);
         return this.userservice.uploadavatar(Number(id), file);
     }
 }
