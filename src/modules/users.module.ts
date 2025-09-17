@@ -15,7 +15,7 @@ import { SeedService } from 'src/services/seeder.service';
         Emailmodule
     ],
     controllers: [UsersController],
-    providers: [UsersService,UserResolver],
+    providers: [UsersService,UserResolver,SeedService],
     exports: [UsersService,SeedService]
 })
 export class UsersModule {}

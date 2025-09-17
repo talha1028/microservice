@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
@@ -20,7 +20,9 @@ export class AdminService {
   async promoteUserToAdmin(userId: number): Promise<User> {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException(`User with ID ${userId} not found`);
-
+    if (user.role === UserRole.ADMIN){
+        throw new BadRequestException('User already admin');
+    }
     user.role = UserRole.ADMIN;
     return this.userRepo.save(user);
   }

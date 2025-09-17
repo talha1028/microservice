@@ -7,10 +7,11 @@ import { DataSource } from 'typeorm';
 import { multerModule } from './modules/multer.module';
 import { Authmodule } from './modules/auth.module';
 import { AppGraphQLModule } from './modules/graphql.module';
+import { AdminModule } from './modules/admin.module';
 
 
 @Module({
-  imports: [dbmodule,UsersModule,multerModule,Authmodule,AppGraphQLModule],
+  imports: [dbmodule,UsersModule,multerModule,Authmodule,AppGraphQLModule,AdminModule],
   controllers: [AppController],
   providers: [AppService],
 })

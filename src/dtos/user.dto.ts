@@ -1,34 +1,46 @@
-import { IsEmail, IsUrl, IsNotEmpty, MinLength, IsOptional } from "class-validator";
+import { 
+  IsEmail, 
+  IsUrl, 
+  IsNotEmpty, 
+  MinLength, 
+  IsOptional, 
+  Matches, 
+  MaxLength 
+} from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class createuserdto {
-    @ApiProperty({
-        example: "john.doe@example.com",
-        description: "The email address of the user"
-    })
-    @IsEmail()
-    email: string;
+  @ApiProperty({
+    example: "john.doe@example.com",
+    description: "The email address of the user",
+  })
+  @IsEmail({}, { message: "Invalid email format" })
+  email: string;
 
-    @ApiProperty({
-        example: "strongPassword123",
-        description: "Password (min 8 characters)"
-    })
-    @MinLength(8)
-    password: string;
+  @ApiProperty({
+    example: "StrongPass123!",
+    description: "Password (min 8 characters, at least 1 uppercase, 1 lowercase, 1 number, 1 special character)",
+  })
+  @IsNotEmpty({ message: "Password cannot be empty" })
+  @MinLength(8, { message: "Password must be at least 8 characters long" })
+  @MaxLength(32, { message: "Password cannot exceed 32 characters" })
 
-    @ApiProperty({
-        example: "John Doe",
-        description: "Full name of the user"
-    })
-    @IsNotEmpty()
-    @MinLength(3)
-    name: string;
+  password: string;
 
-    @ApiProperty({
-        example: "https://example.com/avatar.jpg",
-        description: "Profile picture URL"
-    })
-    @IsUrl()
-    @IsOptional()
-    avatarurl?: string;
+  @ApiProperty({
+    example: "John Doe",
+    description: "Full name of the user",
+  })
+  @IsNotEmpty({ message: "Name cannot be empty" })
+  @MinLength(3, { message: "Name must be at least 3 characters long" })
+  @MaxLength(50, { message: "Name cannot exceed 50 characters" })
+  @Matches(/^[A-Za-z\s]+$/, {
+    message: "Name must contain only alphabets and spaces",
+  })
+  @Matches(/^(?!\s)(?!.*\s$)(?!.*\s{2,}).*$/, {
+    message: "Name cannot have leading, trailing, or multiple consecutive spaces",
+  })
+  name: string;
+
+
 }

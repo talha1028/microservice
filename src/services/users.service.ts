@@ -54,4 +54,14 @@ export class UsersService {
             avatarUrl: user.avatarurl,
         };
     }
+    async getavatarurl(id: number){
+        const user = await this.userRepo.findOneBy({id : id});
+        if (!user) throw new NotFoundException('User not found');
+
+        if (!user.avatarurl) {
+            throw new NotFoundException('User has no uploaded avatar');
+        }
+
+        return user.avatarurl;
+    }
 }
