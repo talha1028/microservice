@@ -9,13 +9,14 @@ export class OwnershipGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user; 
     const paramId = Number(request.params.id);
-    console.log(user);
+    console.log(user)
     if(!paramId){
         throw new BadRequestException('User id not found in params')
     }
     if (user.role === UserRole.ADMIN || user.role === UserRole.SUPERADMIN) {
       return true;
     }
+    
     if (user.userId === paramId) {
       return true;
     }

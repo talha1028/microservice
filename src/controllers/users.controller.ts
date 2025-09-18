@@ -1,6 +1,7 @@
 import {
   Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile,
-  UseInterceptors, UseGuards, HttpCode, HttpStatus, NotFoundException
+  UseInterceptors, UseGuards, HttpCode, HttpStatus, NotFoundException,
+  BadRequestException
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -84,6 +85,9 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update user by ID (owner or admin)' })
   async updateUser(@Param('id') id: string, @Body() updateUserDto: updateuserdto) {
+    if (!updateUserDto || Object.keys(updateUserDto).length === 0) {
+    throw new BadRequestException('Update body cannot be empty');
+  }
     const updatedUser = await this.userservice.updateuser(Number(id), updateUserDto);
     return {
       statusCode: HttpStatus.OK,
@@ -129,7 +133,9 @@ export class UsersController {
       avatarUrl: `http://localhost:3335${avatarPath}`,
     };
   }
-
+  
+  @UseGuards(Jwtauthguard, OwnershipGuard)
+  @ApiBearerAuth('access-token')
   @Get(':id/avatar')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get user avatar (returns URL in JSON)' })
