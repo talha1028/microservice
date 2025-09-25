@@ -2,13 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "src/entities/user.entity";
-import { Redisservice } from "./redis.service";
+import { RedisService } from "./redis.service";
 @Injectable()
 export class Authservice{
     constructor(
         private userservice: UsersService,
         private jwtservice: JwtService,
-        private redisservice: Redisservice        
+        private redisservice: RedisService    
     ) {}
     
     async login(user : User){

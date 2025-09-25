@@ -1,6 +1,7 @@
 import { 
   Controller, Get, Post, Param, Delete, UseGuards, 
-  HttpCode, HttpStatus, Patch, Body 
+  HttpCode, HttpStatus, Patch, Body, 
+  Req
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { RolesGuard } from '../guards/roles.guard';
@@ -98,8 +99,8 @@ export class AdminController {
   @ApiOperation({ summary: 'Delete user by ID (SuperAdmin only)' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
-  async deleteUser(@Param('id') id: string) {
-    await this.usersService.deleteuser(Number(id));
-    return { message: `User with ID ${id} deleted successfully` };
-  }
+  async deleteuser(@Param('id') id: string, @Req() req) {
+  const currentUserId = req.user.id; // comes from JWT
+  return await this.usersService.deleteuser(Number(id), currentUserId);
+}
 }

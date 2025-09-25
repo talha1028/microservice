@@ -18,7 +18,7 @@ export class createuserdto {
   email: string;
 
   @ApiProperty({
-    example: "StrongPass123!",
+    example: "12345678",
     description: "Password (min 8 characters, at least 1 uppercase, 1 lowercase, 1 number, 1 special character)",
   })
   @IsNotEmpty({ message: "Password cannot be empty" })
